@@ -33,6 +33,34 @@ mcq = generator.get_mcq()
 ```
 
 # Generating Distractors
+Distractors are the wrong answers for multiple-choice question. For generating distractors DistractorGenerator.ipynb file can be used. Below are the steps to execute the file.
+1. Use google colab to open the file
+2. Download the BERT-WSD model from the link provided above and upload it to your google drive.
+3. Change the model directory to the path were model is stored in the drive.
+4. provided a sentence and a target word, the distractor generator class will generate distractors. Following are the steps to execute
+
+```python
+sentence = "John enjoys playing cricket in summer"
+targetword = "cricket"
+distractorGenerator = DistractorGeneration(sentence, targetword)
+formattedSentence = distractorGenerator.format_sentence_for_bert()
+sense,meaning,answer = distractorGenerator.get_predictions(formattedSentence)
+distractors = distractorGenerator.generate_distractors_wordnet(sense, answer)
+```
+<b>Output: </b> 
+
+            John enjoys playing [TGT]cricket[TGT] in summer
+
+            meaning:  a game played with a ball and bat by two teams of 11 players; teams take turns trying to score runs 
+            score:  0.9997342482658158
+
+            meaning:  leaping insect; male makes chirping noises by rubbing the forewings together 
+            score:  0.0002657517341842314
+
+
+            -----------------------------------------------------------------------------------------------
+
+            ['ball_game', 'field_hockey', 'football', 'hurling', 'lacrosse', 'polo', 'pushball', 'ultimate_frisbee']
 
 # Training Scripts
 The scripts used for training T5 models are located in train directory.
