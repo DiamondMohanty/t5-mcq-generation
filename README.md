@@ -23,6 +23,8 @@ For generating question generators/QuestionGenerator.ipynb file can be used. Bel
 4. Once the model is extracted it can be found at location <pre><code>t5_model_directory = "outputs/best_model</pre></code>Change the location if default location does not works.
 5. Provide a new sentence using context variable and key using answer variable. The predicted question will be stored in mcq variable.
 
+<b>Note:</b> GPU is required to generate questions
+
 ```python
 context = 'John\'s enjoys playing cricket in summer'
 answer = 'cricket'
@@ -31,3 +33,42 @@ mcq = generator.get_mcq()
 ```
 
 # Generating Distractors
+
+# Training Scripts
+The scripts used for training T5 models are located in train directory.
+
+# Text Summarization and Answer generation using T5-Base
+The text summarization and sample answer prediction script can be done using generators/text_summarization.ipynb.
+```python
+# Summarization
+text = """
+The National Union of Freedom Fighters (NUFF) was an armed Marxist revolutionary group in Trinidad and Tobago. The group fought a guerrilla campaign to overthrow the government of Prime Minister Eric Williams following the failed 1970 Black Power uprising and a mutiny in the Trinidad and Tobago Regiment. NUFF formed from the Western United Liberation Front, a loose grouping of largely unemployed men from the western suburbs of Port of Spain. NUFF drew disaffected members of the National Joint Action Committee, a Black Power organisation, and established a training camp in south Trinidad. In 1972 and 1973 NUFF attacked police posts to acquire weapons, robbed banks, and carried out an insurgent campaign against the government. With improved intelligence capabilities, the government eventually killed or captured most of its leadership. Eighteen NUFF members and three policemen were killed over the course of the insurgency. NUFF was anti-imperialist and anti-capitalist and was notable for the extent to which women played an active role in the organisation, including among its guerrilla fighters.
+"""
+c_string = ComplexString(text)
+c_string.summary()
+```
+
+<b>Output: </b> the national union of freedom fighters was an armed revolutionary group. it fought a guerrilla campaign to overthrow the government of prime minister Eric Williams. NUFF attacked police posts to acquire weapons, robbed banks, carried out insurgent campaign.
+
+```python
+# Prediction of answer given a context and question
+context = 'the national union of freedom fighters was an armed revolutionary group. it fought a guerrilla campaign to overthrow the government of prime minister Eric Williams. NUFF attacked police posts to acquire weapons, robbed banks, carried out insurgent campaign.'
+question = "Who is the prime minister"
+input = 'question: %s context: %s' % (question, context)
+features = tokenizer(input, return_tensors='pt')
+input_ids = features['input_ids']
+attention_mask = features['attention_mask']
+outcome = model.generate(input_ids = input_ids, attention_mask = attention_mask, max_length=255)
+tokenizer.decode(outcome[0])
+```
+<b>Output: </b>Eric Williams
+
+# Text complexity Analysis
+Text complexity can be found using the script file generators/text_simplification.ipynb
+```python
+text = 'the national union of freedom fighters was an armed revolutionary group. it fought a guerrilla campaign to overthrow the government of prime minister Eric Williams. NUFF attacked police posts to acquire weapons, robbed banks, carried out insurgent campaign.'
+import textstat
+textstat.flesch_kincaid_grade(text)
+```
+<b>Output: </b> 10.7
+
